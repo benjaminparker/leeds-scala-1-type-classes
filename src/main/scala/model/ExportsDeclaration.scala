@@ -4,63 +4,49 @@ import java.util.UUID
 
 import persistance.DeclarationStore.{findInCache, storeInCache}
 
-case class WarehouseInfo(warehouseName: String)
+case class Warehouse(name: String)
 
-object WarehouseInfo {
+object Warehouse {
 
-  implicit object CacheableWarehouseInfo extends Cacheable[WarehouseInfo] {
+  implicit object CacheableWarehouseInfo extends Cacheable[Warehouse] {
 
-    def save(id: String, warehouseInfo: WarehouseInfo): WarehouseInfo = {
+    def upsert(id: String, warehouse: Warehouse): Warehouse = {
       findInCache(id) match {
-        case Right(declaration) => storeInCache(declaration.copy(warehouseInfo = Some(warehouseInfo)))
-        case Left(_) => storeInCache(ExportsDeclaration(warehouseInfo = Some(warehouseInfo)))
+        case Right(declaration) => storeInCache(declaration.copy(warehouse = Some(warehouse)))
+        case Left(_) => storeInCache(ExportsDeclaration(warehouse = Some(warehouse)))
       }
-      warehouseInfo
-    }
-
-    def find(id: String): Either[String, WarehouseInfo] = {
-      findInCache(id) match {
-        case Right(ExportsDeclaration(_, Some(warehouseInfo), _)) => Right(warehouseInfo)
-        case _ => Left("Warehouse Info Not found")
-      }
-    }
-  }
-}
-
-case class OfficeOfExit(officeName: String)
-
-object OfficeOfExit {
-
-  implicit object CacheableOfficeOfExit extends Cacheable[OfficeOfExit] {
-    def save(id: String, o: OfficeOfExit): OfficeOfExit = {
-      findInCache(id) match {
-        case Right(declaration) => storeInCache(declaration.copy(officeOfExit = Some(o)))
-        case Left(_) => storeInCache(ExportsDeclaration(officeOfExit = Some(o)))
-      }
-      o
-    }
-
-    def find(id: String): Either[String, OfficeOfExit] = {
-      findInCache(id) match {
-        case Right(ExportsDeclaration(_, _, Some(officeOfExit))) => Right(officeOfExit)
-        case _ => Left("Office of Exit Not found")
-      }
+      warehouse
     }
   }
 
 }
 
-case class ExportsDeclaration(id: String = UUID.randomUUID().toString, warehouseInfo: Option[WarehouseInfo] = None, officeOfExit: Option[OfficeOfExit] = None)
+case class Port(name: String)
+
+object Port {
+
+  implicit object CacheablePort extends Cacheable[Port] {
+    def upsert(id: String, port: Port): Port = {
+      findInCache(id) match {
+        case Right(declaration) => storeInCache(declaration.copy(port = Some(port)))
+        case Left(_) => storeInCache(ExportsDeclaration(port = Some(port)))
+      }
+      port
+    }
+  }
+
+}
+
+case class ExportsDeclaration(id: String = UUID.randomUUID().toString, warehouse: Option[Warehouse] = None, port: Option[Port] = None)
 
 object ExportsDeclaration {
+
   implicit object CacheableDeclaration extends Cacheable[ExportsDeclaration] {
-  
-      def save(id: String, declaration: ExportsDeclaration): ExportsDeclaration = {
-        storeInCache(declaration)
-        declaration
-      }
-  
-      def find(id: String): Either[String, ExportsDeclaration] = findInCache(id)
+    def upsert(id: String, declaration: ExportsDeclaration): ExportsDeclaration = {
+      storeInCache(declaration)
+      declaration
     }
+  }
+
 }
 

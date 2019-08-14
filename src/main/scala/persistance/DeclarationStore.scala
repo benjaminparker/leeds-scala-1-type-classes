@@ -5,7 +5,7 @@ import model.ExportsDeclaration
 object DeclarationStore {
 
   var store: Map[String, ExportsDeclaration] = {
-    println("New STORE...")
+    println("New STORE..."); println()
     Map.empty
   }
 
@@ -16,7 +16,7 @@ object DeclarationStore {
 
   def storeInCache(i: ExportsDeclaration) = {
     store = store + (i.id -> i)
-    println(s"STORE: $store")
+    println(s"STORE: $store"); println()
     i
   }
 }
